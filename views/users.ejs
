@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="/stylesheet/style.css">
+<!-- 	<link rel="stylesheet" type="text/css" href="/Users/ragyhaddad/Desktop/WebDev/dva_project/public/stylesheets"> -->
+</head>
+<body>
+<div class="container">
+<table>
+	<th scope="row">Probe ID</th>
+	<th scope="row">Gene Symbol</th>
+	<th scope="row">GenBank Accession</th>
+	<th scope="row">Adjusted p-value</th>
+ <% for(var i=0; i < samples.length-1; i++) { %>
+          <tr id='<%= samples[i].sample %>' name="<%= samples[i].sample %>">
+
+            <td><input class='values' id='<%= samples[i].accession %>' value='<%= samples[i].accession %>' type="checkbox"><a><%= samples[i].probeID %></a></td>
+            <td ><%= samples[i].geneSymbol %></td>
+            <td><%= samples[i].genBank %></td>
+            <td><%= samples[i].pValue %></td>
+          </tr>
+       <% } %>
+
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+  <head>
+   <!--  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+
+  </head>
+  <body>
+    <div style="flex-direction: column;" class="container colored centered">
+    <h1>SAVAGE</h1>
+    <div style="margin-bottom: 8px;" class="container centered"><small><strong>S</strong>imultaneous <strong>A</strong>utomation of <strong>V</strong>isualization and <strong>A</strong>nalysis of <strong>G</strong>ene <strong>E</strong>xpression Data</small></div>
+    </div>
+
+    
+    <form id="geoForm" action="/upload" method="POST">
+    <div class="container" id='loading'></div>
+    <div class="container colored tooltip ">
+        <span class="tooltiptext tooltip1"> Enter a valid GSE accesion. Try GSE51612 for example </span>
+        <span class="formLabel"> Enter Accession:  </span> <input id='accIN' name='accessionInput' class="accessionInput pulse" type="text" placeholder='GSE51612' required>
+        <button onclick="document.getElementById('accessionInput').submit()" id='loadSamples' class="buttonNew tooltip"> Load Samples  </button>
+    </div>
+    </form>
+
+
+    <div id='defineGroup' class="container centered">
+       <!--  <button class="buttonNew" onclick='defineGroups()'>Define Groups</button> -->
+    </div>
+
+
+      <form id='groupForm' action="/analyzeGroups/<%=accession%>" method="POST" >
+        <div id='myGroup' class="container">
+        </div>
+      </form>
+
+      <div id='groupDiv' class="container colored">
+         <span class="formLabel"> Group Name: </span> <input id='groupName' type='text' name='' required>
+        <button onclick='setGroup()' class="buttonNew" >Set Group</button>
+      </div>
+
+    <div class="container colored">
+
+      <table class="table table-striped bordered-regular">
+
+          <% if (samples.length > 0 ) { %>
+              <th scope="row">Accession</th>
+               <th scope="row">Sample</th>
+               <th scope="row">Type</th>
+          <% } %>
+
+          <% for(var i=0; i < samples.length-1; i++) { %>
+          <tr id='<%= i%>' name="<%= samples[i].sample %>">
+
+            <td scope='row'><input class='values' id='<%= samples[i].accession %>' value='<%= samples[i].accession %>' type="checkbox"><a><%= samples[i].accession %></a></td>
+            <td ><%= samples[i].sample %></td>
+            <td><%= samples[i].type %></td>
+           <!--  <td><%= samples[i].location %></td> -->
+          </tr>
+       <% } %>
+      </table>
+    </div>
+
+    <div class="container colored">
+    <span id="tooltip2" class="tooltip">
+        <span id = "tooltipText2" class="tooltiptext tooltip2"> Define at least two distinct groups to start the differential expression analysis </span>
+        <button id='analyzeSelected' class="buttonNew button-disabled tooltip" disabled="true">  Start Analysis</button>
+
+    </span>
+  </div>
+  <% if (message.length > 0) { %>
+<div style='height: 3vh; border-radius: 4px;' class="container error"><p><%=message%></p></div>
+<% } %>
+  
+  </body>
+
+  <script type="text/javascript">
+    var allGroups = [];
+    var numGroups = 0;
+    var defineGroups = function(){
+      $('#groupDiv').toggle();
+    }
+    var setGroup = function () {
+        if (document.getElementById("groupName").value == "") {
+            return;
+        }
+        var groupName = $('#groupName').val().replace(/\s+/g,"");
+        // console.log(groupName);
+
+        var list = document.getElementsByClassName('values');
+        var checkedValue = $('input:checked').val();
+        var checked = false;
+
+
+        numChecked = 0;
+        // Check if at least two groups are checked
+        for (i in list){
+           console.log(i);
+          if (document.getElementById(list[i].defaultValue)){
+            if (document.getElementById(list[i].defaultValue).checked == true){
+                numChecked += 1;
+            }
+          }
+        }
+
+        if (numChecked < 2) {
+            alert("There have to be at least two samples in a group.")
+            return;
+        }
+
+        for (i in list){
+           console.log(i);
+          if (document.getElementById(list[i].defaultValue)){
+            if (document.getElementById(list[i].defaultValue).checked == true){
+                // console.log(list[i].defaultValue);
+                if (!checked) {
+                  checked = true;
+                  numGroups += 1;
+                  $('#myGroup').append("<div id="+groupName+" class='container bordered-regular'><span class=\"formLabel\">"+groupName+"</span></div>");
+                }
+                $('#'+groupName).append("<input name=" + groupName  +" id="+groupName+" style='display:block' type='text' value="+list[i].defaultValue+" readonly='readonly'>");
+
+                $('#'+list[i].defaultValue).prop('disabled',true);
+                $('#'+list[i].defaultValue).prop('checked',false);
+                document.getElementById(i).classList.add('disable');
+            }
+          }
+        }
+
+        if (checked) {
+            document.getElementById("groupName").value = "";
+        }
+        if (numGroups > 1) {
+            document.getElementById("analyzeSelected").classList.remove('button-disabled');
+            document.getElementById("analyzeSelected").disabled = false;
+            document.getElementById("tooltip2").classList.remove('tooltip');
+            document.getElementById("tooltipText2").innerHTML = "";
+        }
+    }
+
+    $('#analyzeSelected').click(function(){
+        console.log(this);
+        $('#loading').append('<div class="loader"></div>')
+        $('#groupForm').submit();
+    });
+    $('#loadSamples').click(function(){
+      var input = $('#accIN').val();
+       $('#geoForm').submit();
+       if (input.length > 0){
+        $('#loading').append('<div class="loader"></div>')
+        document.getElementById("loadSamples").disabled = true;
+       
+      }
+      
+    })
+
+  </script>
+</html>
+<style>
+.loader {
+  margin :16px;
+  border: 4px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 4px solid tomato;
+  width: 60px;
+  height: 60px;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>

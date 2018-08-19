@@ -1,0 +1,21 @@
+    
+<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+    <div style="flex-direction: column;" class="container colored centered">
+    <h1>SAVAGE</h1>
+    <div style="margin-bottom: 8px;" class="container centered"><small><strong>S</strong>imultaneous <strong>A</strong>utomation of <strong>V</strong>isualization and <strong>A</strong>nalysis of <strong>G</strong>ene <strong>E</strong>xpression Data</small></div>
+    </div>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    
+   <div class="container">
+   	<div class="container"><a class='buttonNew' href='/switchPathways/<%=jobID %>/1'>Pathway 1</a></div>
+   	<div class="container"><a class='buttonNew' href='/switchPathways/<%=jobID %>/2'>Pathway 2</a></div>
+   	<div class="container"><a class='buttonNew' href='/switchPathways/<%=jobID %>/3'>Pathway 3</a></div>
+<div class="container"><button onclick='goBack();' class="buttonNew">Back</button></div>
+   </div>
+
+
+<script>
+function goBack() {
+    window.history.back();
+}
+</script>

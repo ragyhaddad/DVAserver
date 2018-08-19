@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+<div style="flex-direction: column;" class="container colored centered">
+    <h1>SAVAGE</h1>
+    <div style="margin-bottom: 8px;" class="container centered"><small><strong>S</strong>imultaneous <strong>A</strong>utomation of <strong>V</strong>isualization and <strong>A</strong>nalysis of <strong>G</strong>ene <strong>E</strong>xpression Data</small></div>
+    </div>
+  <form id='clustFormNum' action=/users/runClustNum method="POST" onsubmit="return validateNumber();">
+    <div class="container">
+    <span class="formLabel"># of Samples:  </span><input type="text" name="sampleNumber" placeholder="enter number of samples" required>
+    <button class="buttonNew-wide">Filter samples by number</button>
+  </div>
+</form>
+
+  <form id='clustFormPval' action=/users/runClustVal method="POST" onsubmit="return validatePval();">
+    <div class="container">
+    <span class="formLabel">P-value:  </span><input type="text" name="pValue" placeholder="enter p-value cutoff" required>
+    <button class="buttonNew-wide">Filter samples by P-value</button>
+  </div>
+</form>
+
+<div class="container bordered">
+<table class='table table-striped'>
+	<th>Probe ID</th>
+	<th>Gene Symbol</th>
+	<th>GenBank Accession</th>
+	<th>Adjusted p-value</th>
+
+ <% for(var i=1; i < samples.length-1; i++) { %>
+          <tr id='<%= samples[i].sample %>' name="<%= samples[i].sample %>">
+            <td><%= samples[i].probeID %></td>
+            <td ><%= samples[i].genBank %></td>
+            <td><%= samples[i].geneSymbol %></td>
+            <td><%= samples[i].pValue %></td>
+          </tr>
+       <% } %>
+
+</table>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+  function submitClust(){
+    
+  }
+  function validatePval() {
+    var pvalSample = document.forms["clustFormPval"]["pValue"].value;
+    if (pvalSample < 0 || pvalSample > 1) {
+      alert("P-value must be between 0 and 1.");
+      return false;
+    }
+  }
+  function validateNumber() {
+    var numSample = document.forms["clustFormNum"]["sampleNumber"].value;
+    if (numSample < 2) {
+      alert("Number of samples must be greater than 1.");
+      return false;
+    }
+  }
+</script>
+

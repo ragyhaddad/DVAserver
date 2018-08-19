@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Clustering Test</title>
+</head>
+		<script src="/javascript/jquery-3.3.1.js"></script>
+		<script src="/javascript/kinetic-v5.1.0.js"></script>
+		<script src="/javascript/inchlib-1.2.0.js"></script>
+		<link rel='stylesheet' href='/stylesheets/style.css' />
+		<div  class="container" value='<%=ID%>'>
+		<strong>Analysis ID:</strong></h3>
+		</div>
+		<div id='ID' class="container colored" value='<%=ID%>'>
+		<%=ID%>
+		</div>
+
+		<div id=loading class="container"><button onclick='sendGenes();' class="buttonNew">Analyze selected genes</button></div>
+		
+		<script> 
+			var defined_ids;
+			$(document).ready(function() {
+			//run when the whole page is loaded
+			
+			window.inchlib = new InCHlib({
+				//instantiate InCHlib
+				target: "inchlib", 
+				//ID of a target HTML element
+				column_metadata: true,
+				draw_row_ids: true,
+				//turn on the column metadata
+				max_height: 1200,
+				//set maximum height of visualization in pixels
+				width: 1000,
+				//set width of visualization in pixels
+				heatmap_colors: "RdLrGr",
+				//set color scale for clustered data
+			});
+			inchlib.events.dendrogram_node_onclick = function(object_ids, node_id, evt){
+				console.log(object_ids);
+				defined_ids = object_ids;
+			}
+
+			var ID = $('#ID')[0].innerText;
+			console.log($('#ID')[0].innerText);
+
+			inchlib.read_data_from_file("/users/getJson/"+ID);
+			//read input json file
+			inchlib.draw();
+			//draw cluster heatmap
+		});
+		function sendGenes (){
+			console.log(defined_ids);
+			var ID1 = $('#ID')[0].innerText;
+			console.log($('#ID'));
+			$('#loading').append('<div class="loader"></div>')
+		
+				$.ajax({
+					type:'POST',
+					url:'/users/runAPIpath',
+					data:JSON.stringify(defined_ids),
+					contentType: 'application/json',
+					success:function(data){
+					console.log('success post');
+					$('#loading').empty();
+					window.location.href='/pathwayList/'+ID1
+
+					}
+
+				});
+			}
+		</script>
+<body>
+	<div id="inchlib"></div>
+</body>
+</html> 
+<style>
+.loader {
+  margin :16px;
+  border: 4px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 4px solid tomato;
+  width: 60px;
+  height: 60px;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
